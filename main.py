@@ -1,94 +1,19 @@
-import pyttsx3 #pip install pyttsx3
-import speech_recognition as sr #pip install speechRecognition
-import datetime
 import webbrowser
 import os
-import sys,time
+import sys
 import pywhatkit as kit
 import pyautogui
-import threading
 import psutil
-import pickle
 from ramWarnings import ramWarnings
 from colorama import Fore
 from wordMacth import find_most_common_match
 import requests
-engine = pyttsx3.init('sapi5')
-voices = engine.getProperty('voices')
-# print(voices)
-engine.setProperty('voice', voices[2].id)
+from AIFucntions import *
 
-newVoiceRate = 175
-engine.setProperty('rate',newVoiceRate)
+'''
+This is the main fucntion or the core of AI
+'''
 
-def speak(audio):
-    engine.say(audio)
-    engine.runAndWait()
-
-def storeQuery(word):
-    e = open('data.pkl','rb')
-    datalist = pickle.load(e)
-    if word not in datalist:
-        datalist.append(word)
-    e.close()
-    f = open('data.pkl','wb')
-    pickle.dump(datalist,f)
-    f.close()
-    # print(datalist)
-
-def loadCommonWord():
-    e = open('data.pkl','rb')
-    datalist = pickle.load(e)
-    e.close()
-    return datalist
-
-
-
-def makePickle():
-    with open ('data.pkl', 'wb') as e:
-        pickle.dump([''],e)
-        e.close()
-
-def wishMe():
-    hour = int(datetime.datetime.now().hour)
-    if hour>=0 and hour<12:
-        speak("Good Morning!")
-
-    elif hour>=12 and hour<18:
-        speak("Good Afternoon!")   
-
-    else:
-        speak("Good Evening!")  
-
-    speak("I am Jarvis Sir. Please tell me how may I help you")       
-
-def takeCommand():
-    #It takes microphone input from the user and returns string output
-
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print(Fore.LIGHTGREEN_EX + "Listening..." + Fore.RESET)
-        # speak('listening now')
-        r.energy_threshold = 400
-        r.pause_threshold = 1.5 
-        r.operation_timeout = 5
-        audio = r.listen(source)
-
-    try:
-        print("Recognizing...")    
-        query = r.recognize_google(audio, language='en-in')
-        print(f'You said:{str(query).lower()}')
-        # speak(query)
-    except Exception as e:
-        # print(e)    
-        print("Say that again please...")  
-        # speak("Say that again please...")  
-        return "m"
-    return query
-
-
-checkList = ["javis","hello","are you listening"]
-ramWarning = True
 def main():
     global ramWarning
     sayError = True
@@ -190,14 +115,51 @@ def main():
             sys.exit()
                     
         elif query.startswith('close'):
-            query = query[5:]
-            if query == 'vs code':
+            appName = query[5:]
+            if appName == 'vs code':
                 speak(f'closeing {query}')
                 os.system("TASKKILL /F /IM code.exe") 
 
             else:
-                speak(f'closeing {query}')
-                os.system(f"TASKKILL /F /IM {(query).lower()}.exe") 
+                try:
+                    # appName = query[5:].replace("dot",".")
+                    appName = query[6:]
+                    if " dot " in appName:
+                        appName = appName.replace(" dot ",".")
+                    appName = appName.replace(" ","")
+
+                    print(appName)
+                    allFilePaths = loadFilePaths()
+                    listTomatchWord = list(allFilePaths.keys())
+                    
+                    # print(listTomatchWord)
+                    matchratio = find_most_common_match(appName,listTomatchWord,findCommonWord=False)
+                    # print(matchratio)
+                    try:
+                        print(f"Most matching word found {matchratio[0][1]} {matchratio[0][0]}  and {matchratio[1][1]} {matchratio[1][0]}%")
+                        # speak(f"Most matching word found {matchratio[0][1]}  and {matchratio[1][1]} ")
+
+
+                        os.close(allFilePaths[str(matchratio[0][1])])
+                    except Exception as e:
+                        
+                        try:
+                            print(f"Most matching word found {matchratio[0][0]} {matchratio[0][1]}%")
+                            # speak(f"Most matching word found {matchratio[0][0]}")
+                            os.close(allFilePaths[matchratio[0][1]])
+                        except Exception as e:
+                            # print(matchratio)
+                            print(e)
+                            print("No matching quary found")
+                            speak("No matching quary found")
+
+                        # speak("")
+                    # os.startfile(quaryPath)
+
+                except Exception as e:
+                    speak(f'closeing {query}')
+                    os.system(f"TASKKILL /F /IM {(query).lower()}.exe") 
+
 
         elif query.startswith('start'):
             storeQuery(str(query))
@@ -227,19 +189,57 @@ def main():
             storeQuery(str(query))
         
         elif query == "mute":
-            pass
+            pass            
+
+        elif query.startswith('open'):
+            # appName = query[5:].replace("dot",".")
+            appName = query[5:]
+            if " dot " in appName:
+                appName = appName.replace(" dot ",".")
+            appName = appName.replace(" ","")
+
+            print(appName)
+            allFilePaths = loadFilePaths()
+            listTomatchWord = list(allFilePaths.keys())
+            
+            # print(listTomatchWord)
+            matchratio = find_most_common_match(appName,listTomatchWord,findCommonWord=False)
+            # print(matchratio)
+            try:
+                print(f"Most matching word found {matchratio[0][1]} {matchratio[0][0]}  and {matchratio[1][1]} {matchratio[1][0]}%")
+                # speak(f"Most matching word found {matchratio[0][1]}  and {matchratio[1][1]} ")
+
+
+                os.startfile(allFilePaths[str(matchratio[0][1])])
+            except Exception as e:
+                
+                try:
+                    print(f"Most matching word found {matchratio[0][0]} {matchratio[0][1]}%")
+                    # speak(f"Most matching word found {matchratio[0][0]}")
+                    os.startfile(allFilePaths[matchratio[0][1]])
+                except Exception as e:
+                    # print(matchratio)
+                    print(e)
+                    print("No matching quary found")
+                    speak("No matching quary found")
+
+                # speak("")
+            # os.startfile(quaryPath)
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
         else:
             mWords = loadCommonWord()
             # print(mWords)
-            mostMatchingWord = find_most_common_match(query,mWords)
+            mostMatchingWord = find_most_common_match(query,mWords,findCommonWord=False)
             # print(mostMatchingWord)
             try:
-                speak(f'Most matching quary found {mostMatchingWord[0][0]} and {mostMatchingWord[1][0]}')
+                print(f'Most matching quary found {mostMatchingWord[0][1]} and {mostMatchingWord[1][1]}')
+                speak(f'Most matching quary found {mostMatchingWord[0][1]} and {mostMatchingWord[1][1]}')
                 # sayError = False
             except Exception as indexError:
                 try:
-                    speak(f'Most matching quary found {mostMatchingWord[0][0]}')
+                    print(f'Most matching quary found {mostMatchingWord[0][1]}')
+                    speak(f'Most matching quary found {mostMatchingWord[0][1]}')
                 except Exception as e:
                     if sayError:
                         speak(f"No matching quary found -> {query}")
@@ -251,6 +251,11 @@ def main():
 
         
 if __name__ == "__main__":
-    # wishMe()
-    main()
-    # storeQuery('meherab')
+    wishMe()
+    speak('Listening Now')
+    allFilePaths = loadFilePaths()
+    try:
+        main()
+    except Exception as e:
+        print(e)
+        main()

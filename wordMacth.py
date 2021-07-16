@@ -16,12 +16,19 @@ def filterMatch(wordtoSeacrh,wordList):
             if  re.search(splitWords ,word) != None:
                 if wordList[index] not in macthingWords:
                     macthingWords.append(wordList[index])
-    print(macthingWords)
+    # print(macthingWords)
     return macthingWords
 
 
-def find_most_common_match(word,allWordList=list):
-    mostCommonmatchList = filterMatch(word,allWordList)
+def find_most_common_match(word,allWordList=list,findCommonWord=False): 
+    '''
+    This match function will take a word and a word list and return a list of list when the
+    first item will be the matching ratio and 2nd item will be the most matching word and so on
+    '''
+    if findCommonWord:
+        mostCommonmatchList = filterMatch(word,allWordList)
+    else:
+        mostCommonmatchList = allWordList
 
 
 
@@ -29,17 +36,15 @@ def find_most_common_match(word,allWordList=list):
     matchRatio = []
     for commonWords in mostCommonmatchList:
         llLIist = []
-
-        matchingRatio = difflib.SequenceMatcher(None, word, commonWords).ratio()
-
-        llLIist.append(commonWords)
-        llLIist.append(matchingRatio)
-        matchRatio.append(llLIist)
-        # matchRatio.append(matchingRatio)
-
-        # matchRatio = matchRatio.sorted()
+        # print(commonWords)
+        matchingRatio = difflib.SequenceMatcher(None, word, commonWords).ratio() #!importein
         # print(matchingRatio)
+        llLIist.append(matchingRatio)
+        llLIist.append(commonWords)
+        matchRatio.append(llLIist)
+        
         matchRatio.sort(reverse=True)
+        # print(matchRatio ,"\n\n")
     return matchRatio
 
 
