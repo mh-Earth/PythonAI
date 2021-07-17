@@ -9,6 +9,7 @@ from colorama import Fore
 from wordMacth import find_most_common_match
 import requests
 from AIFucntions import *
+from FindAllPaths import storePaths_Stealth
 
 '''
 This is the main fucntion or the core of AI
@@ -16,7 +17,6 @@ This is the main fucntion or the core of AI
 
 def main():
     global ramWarning
-    sayError = True
     while True:
         if ramWarning:
             ramWarnings()
@@ -215,7 +215,7 @@ def main():
             # print(matchratio)
             print(matchratio)
             try:
-                if matchratio[0][1] > .60:
+                if matchratio[0][0] > .60:
                     print(f"Most matching word found {matchratio[0][1]} {matchratio[0][0]}  and {matchratio[1][1]} {matchratio[1][0]}%")
                     # speak(f"Most matching word found {matchratio[0][1]}  and {matchratio[1][1]} ")
                     os.startfile(allFilePaths[str(matchratio[0][1])])
@@ -225,7 +225,7 @@ def main():
             except Exception as e:
                 
                 try:
-                    if matchratio[0][1] > .40:
+                    if matchratio[0][0] > .40:
                         print(f"Most matching word found {matchratio[0][0]} {matchratio[0][1]}%")
                         # speak(f"Most matching word found {matchratio[0][0]}")
                         os.startfile(allFilePaths[matchratio[0][1]])
@@ -272,9 +272,10 @@ def main():
 
         
 if __name__ == "__main__":
+    print(Fore.GREEN + "Starting up......." + Fore.RESET)
     # wishMe()
     # speak('Listening Now')
-    allFilePaths = loadFilePaths()
+    storePaths_Stealth()
     try:
         main()
     except Exception as e:

@@ -6,6 +6,8 @@ from colorama import Fore
 import requests
 import os
 
+userName = 'User' #replace This with your user name
+
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 # print(voices)
@@ -80,16 +82,16 @@ def loadFilePaths():
 '''
 It takes microphone input from the user and returns string output
 '''
+r = sr.Recognizer()
+# speak('listening now')
+r.energy_threshold = 400
+r.dynamic_energy_threshold = 1.5
+r.operation_timeout = 5
+r.phrase_threshold = .7
 def takeCommand():
 
-    r = sr.Recognizer()
     with sr.Microphone() as source:
         print(Fore.LIGHTGREEN_EX + "Listening..." + Fore.RESET)
-        # speak('listening now')
-        r.energy_threshold = 800
-        r.dynamic_energy_threshold = 1.5
-        r.operation_timeout = 5
-        r.phrase_threshold = .7
         audio = r.listen(source)
 
     try:
@@ -108,12 +110,17 @@ def takeCommand():
 checkList = ["javis","hello","are you listening"]
 ramWarning = True
 
+
+'''
+This fucton id for search a file or folder in uesr folder
+'''
+
 def findFile(name):
-    for root, dirs, files in os.walk("c:\\Users\\User"):
+    for root, dirs, files in os.walk(f"c:\\Users\\{userName}"):
         if name in files:
             return os.path.join(root, name)
 
-    for root, dirs, files in os.walk("c:\\Users\\User"):
+    for root, dirs, files in os.walk(f"c:\\Users\\{userName}"):
         if name in dirs:
             return os.path.join(root, name)
   
