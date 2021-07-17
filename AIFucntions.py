@@ -5,7 +5,7 @@ import pickle
 from colorama import Fore
 import requests
 import os
-
+import pyautogui 
 userName = 'User' #replace This with your user name
 
 engine = pyttsx3.init('sapi5')
@@ -84,12 +84,10 @@ It takes microphone input from the user and returns string output
 '''
 r = sr.Recognizer()
 # speak('listening now')
-r.energy_threshold = 400
+r.energy_threshold = 1000
 r.dynamic_energy_threshold = 1.5
-r.operation_timeout = 5
 r.phrase_threshold = .7
 def takeCommand():
-
     with sr.Microphone() as source:
         print(Fore.LIGHTGREEN_EX + "Listening..." + Fore.RESET)
         audio = r.listen(source)
@@ -124,3 +122,6 @@ def findFile(name):
         if name in dirs:
             return os.path.join(root, name)
   
+
+def TypeOn(dataTowrite):
+    pyautogui.typewrite(dataTowrite)

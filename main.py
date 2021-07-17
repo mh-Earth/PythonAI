@@ -46,6 +46,12 @@ def main():
         elif query == 'reset data':
             makePickle()
 
+        elif query.startswith('type'):
+            TypeOn(query[5:])
+
+        elif query == "close this tap":
+            pyautogui.hotkey("ctrl" ,"w")
+
         elif query.startswith('open localhost'):
             a = len('open localhost')
             print(a)
@@ -273,7 +279,7 @@ def main():
         
 if __name__ == "__main__":
     print(Fore.GREEN + "Starting up......." + Fore.RESET)
-    # wishMe()
+    wishMe()
     # speak('Listening Now')
     storePaths_Stealth()
     try:
