@@ -1,6 +1,6 @@
 '''
 This is the files for finding all the paths in a desvice to open by the AI
-Some file will not be store like .git , .pyc , __init__ 
+Some file paths will not be store like .git , .pyc , __init__ 
 '''
 
 import os
@@ -16,25 +16,27 @@ def removePuc(word=str):
         # print(pucList[i] ,word)
     return word
 
-def find(path):
+def find(path): 
+    print(f"searching path {path}\n\n")
     for root, dirs, files in os.walk(path):
         for name in files:
             if ".git" not in os.path.join(root, name):
                 if ".pyc" not in os.path.join(root, name):
                     if "__init__" not in os.path.join(root, name):
                         if "migrations" not in os.path.join(root, name):
-                            if name not in pathDict:
+                            if "\My" not in os.path.join(root, name):
                                 name = removePuc(name)
                                 pathDict.update({str(name).lower():os.path.join(root, name)})
-
+                                print(name ,os.path.join(root, name))
         for name in dirs:
             if ".git" not in os.path.join(root, name):
                 if "__pycache__" not in os.path.join(root, name):
                     if "migrations" not in os.path.join(root, name):
-                        if name not in pathDict:
+                        if "\My" not in os.path.join(root, name):
                             name = removePuc(name)
                             pathDict.update({str(name).lower():os.path.join(root, name)})
-                            # print({name:os.path.join(root, name)})
+                            print(name , os.path.join(root, name))
+                                # print({name:os.path.join(root, name)})
 
         # print(files)
         # if name in files:
@@ -55,6 +57,7 @@ def stroePaths():
 
     for item in pathJoinList:
         find(f"c:\\Users\\User\\{item}")
+        pathDict.update({item:f"c:\\Users\\User\\{item}"})
         # print(item)
 
     # f.write(str(pathDict))
@@ -63,4 +66,5 @@ def stroePaths():
     f.close()    
 
 if __name__ == "__main__":
-    pass
+    
+    stroePaths()

@@ -88,6 +88,15 @@ def main():
             os.startfile('C:\\Program Files\\Bandicam\\bdcam.exe')
             storeQuery(str(query))
         
+        
+        elif query.startswith("find"):
+            fileDirName = query[5:]
+            findingPath = findFile(fileDirName)
+            if findingPath != None:
+                print(f'sir File name {fileDirName} found in {findingPath}')
+                speak(f'sir File name {fileDirName} found in {findingPath}')
+
+
         elif query.endswith('.com') or query.endswith('dotkom'):
             if query.endswith("dotkom"):
                 query = query[:-7]
@@ -134,7 +143,6 @@ def main():
                     
                     # print(listTomatchWord)
                     matchratio = find_most_common_match(appName,listTomatchWord,findCommonWord=False)
-                    # print(matchratio)
                     try:
                         print(f"Most matching word found {matchratio[0][1]} {matchratio[0][0]}  and {matchratio[1][1]} {matchratio[1][0]}%")
                         # speak(f"Most matching word found {matchratio[0][1]}  and {matchratio[1][1]} ")
@@ -189,7 +197,7 @@ def main():
             storeQuery(str(query))
         
         elif query == "mute":
-            pass            
+            pass  
 
         elif query.startswith('open'):
             # appName = query[5:].replace("dot",".")
@@ -205,18 +213,24 @@ def main():
             # print(listTomatchWord)
             matchratio = find_most_common_match(appName,listTomatchWord,findCommonWord=False)
             # print(matchratio)
+            print(matchratio)
             try:
-                print(f"Most matching word found {matchratio[0][1]} {matchratio[0][0]}  and {matchratio[1][1]} {matchratio[1][0]}%")
-                # speak(f"Most matching word found {matchratio[0][1]}  and {matchratio[1][1]} ")
+                if matchratio[0][1] > .60:
+                    print(f"Most matching word found {matchratio[0][1]} {matchratio[0][0]}  and {matchratio[1][1]} {matchratio[1][0]}%")
+                    # speak(f"Most matching word found {matchratio[0][1]}  and {matchratio[1][1]} ")
+                    os.startfile(allFilePaths[str(matchratio[0][1])])
+                else:
+                    raise indexError
 
-
-                os.startfile(allFilePaths[str(matchratio[0][1])])
             except Exception as e:
                 
                 try:
-                    print(f"Most matching word found {matchratio[0][0]} {matchratio[0][1]}%")
-                    # speak(f"Most matching word found {matchratio[0][0]}")
-                    os.startfile(allFilePaths[matchratio[0][1]])
+                    if matchratio[0][1] > .40:
+                        print(f"Most matching word found {matchratio[0][0]} {matchratio[0][1]}%")
+                        # speak(f"Most matching word found {matchratio[0][0]}")
+                        os.startfile(allFilePaths[matchratio[0][1]])
+                    else:
+                        raise indexError
                 except Exception as e:
                     # print(matchratio)
                     print(e)
@@ -233,16 +247,23 @@ def main():
             mostMatchingWord = find_most_common_match(query,mWords,findCommonWord=False)
             # print(mostMatchingWord)
             try:
-                print(f'Most matching quary found {mostMatchingWord[0][1]} and {mostMatchingWord[1][1]}')
-                speak(f'Most matching quary found {mostMatchingWord[0][1]} and {mostMatchingWord[1][1]}')
-                # sayError = False
+                if mostMatchingWord[0][0] > .50:
+                    print(f'Most matching quary found {mostMatchingWord[0][1]} and {mostMatchingWord[1][1]}')
+                    print(f'Most matching quary found {mostMatchingWord[0][0]} and {mostMatchingWord[1][0]}')
+                    speak(f'Most matching quary found {mostMatchingWord[0][1]} and {mostMatchingWord[1][1]}')
+                else:
+                    raise indexError
             except Exception as indexError:
                 try:
-                    print(f'Most matching quary found {mostMatchingWord[0][1]}')
-                    speak(f'Most matching quary found {mostMatchingWord[0][1]}')
+                    if mostMatchingWord[0][0] > .40:
+
+                        print(f'Most matching quary found {mostMatchingWord[0][1]}')
+                        print(f'Most matching quary found {mostMatchingWord[0][0]}')
+                        speak(f'Most matching quary found {mostMatchingWord[0][1]}')
+                    else:
+                        raise IndexError
                 except Exception as e:
-                    if sayError:
-                        speak(f"No matching quary found -> {query}")
+                    speak(f"No matching quary found -> {query}")
             main()       
             
         
@@ -251,8 +272,8 @@ def main():
 
         
 if __name__ == "__main__":
-    wishMe()
-    speak('Listening Now')
+    # wishMe()
+    # speak('Listening Now')
     allFilePaths = loadFilePaths()
     try:
         main()

@@ -4,7 +4,7 @@ import datetime
 import pickle
 from colorama import Fore
 import requests
-
+import os
 
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
@@ -86,7 +86,7 @@ def takeCommand():
     with sr.Microphone() as source:
         print(Fore.LIGHTGREEN_EX + "Listening..." + Fore.RESET)
         # speak('listening now')
-        r.energy_threshold = 700
+        r.energy_threshold = 800
         r.dynamic_energy_threshold = 1.5
         r.operation_timeout = 5
         r.phrase_threshold = .7
@@ -107,3 +107,13 @@ def takeCommand():
 
 checkList = ["javis","hello","are you listening"]
 ramWarning = True
+
+def findFile(name):
+    for root, dirs, files in os.walk("c:\\Users\\User"):
+        if name in files:
+            return os.path.join(root, name)
+
+    for root, dirs, files in os.walk("c:\\Users\\User"):
+        if name in dirs:
+            return os.path.join(root, name)
+  
